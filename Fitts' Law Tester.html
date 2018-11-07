@@ -126,26 +126,26 @@
         
         <div id="start-overlay" class="centered">
             <h3>Welcome to the Fitts' Law Testing App</h3>
-            <p> Your Name: <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="name" type="text"></div></p>
-            <p>
-                Participant Type:
-                <div class="ui-select"><div id="type-button" class="ui-btn ui-icon-carat-d ui-btn-icon-right ui-corner-all ui-shadow"><span>Yourself</span><select id="type">
-                    <option value="yourself">Yourself</option>
-                    <option value="similar">Someone Like You</option>
-                    <option value="dissimilar">Someone NOT Like You</option>
-                    <option value="extra">Optional extra participant</option>
-                </select></div></div>
-                <br>
-                Device (i.e. touchpad, mouse...): <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="device" type="text"></div>
-            </p>
+            <p> Your Name: <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="name" type="text" value="tourist"></div></p>
+            <p> Device (i.e. touchpad, mouse...): <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="device" type="text" value="mouse"></div></p>
             <br>
             <p>Please measure the width and height of your screen using a ruler so we can accurately scale the test.</p>
             <p>
-                Width (centimeters):
+                Screen Width (centimeters):
                 <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="width" type="text" onkeyup="this.value=this.value.replace(/[^0-9.]/g,&#39;&#39;)"></div>
-                    <br>
-                Height (centimeters):
+                Screen Height (centimeters):
                 <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="height" type="text" onkeyup="this.value=this.value.replace(/[^0-9.]/g,&#39;&#39;)"></div>
+            </p>
+            <br>
+            <p>Please confirm the experiment setting.</p>
+            <p>
+                Repetition:
+                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="repetition" type="text" value="19" onkeyup="this.value=this.value.replace(/[^0-9]/g,&#39;&#39;)"></div>
+                Target Width (centimeters):
+                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="target-width" type="text" value="0.25,0.50,0.75" onkeyup="this.value=this.value.replace(/[^0-9.,]/g,&#39;&#39;)"></div>
+                Target Distance (centimeters):
+                <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset"><input id="target-distance" type="text" value="2,3,4" onkeyup="this.value=this.value.replace(/[^0-9.,]/g,&#39;&#39;)"></div>
+            </p>
             </p>
             <br>
             <p>
@@ -190,12 +190,12 @@
              */
             
             // *** Change these conditions to run different tests
-      //      var repetitions = 20;
-      //      var widths = [0.25, 0.5, 1, 2];
-      //      var amplitudes = [1, 2, 4, 8];
+            //var repetitions = 19;
+            //var widths = [0.25, 0.5, 0.75];
+            //var amplitudes = [2, 3, 4];
             var repetitions = 19;
-            var widths = [0.25, 0.5, 0.75];
-            var amplitudes = [2, 3, 4];
+            var widths = [1];
+            var amplitudes = [2];
             // ***
             
             var flash_delay = 100; //msec
@@ -223,8 +223,11 @@
             var window_width;
             var scalefactor_x;
             
-            
             function submitSetup(event) {
+                repetitions = parseInt( $("#repetition").val() )
+                widths = $("#target-width").val().split(",")
+                amplitudes = $("#target-distance").val().split(",")
+
                 event.stopPropagation();
                 if (!validateForm()) {
                     return;
@@ -376,7 +379,7 @@
                 $("#test-container").show();
                 $("#test-container").unbind().bind('vmouseup',trialClick);
                 
-                cur_repetition = 15;
+                cur_repetition = repetitions - 2;
                 cur_trial = dummy;
                 presentTrial(dummy);
                 
@@ -604,14 +607,13 @@
                 
                 //record end time and compute duration
                 var name = $("#name").val();
-                var participant = $("#type").val();
                 var device = $("#device").val();
                 var end_time = $.now();
                 var total_time_spent = end_time - total_start_time;
                 var total_error_rate = (parseFloat(total_error_count) / total_repetitions) * 100.0;
                 
                 //build results table
-                var headers = ["Name", "Device", "Width(cm)", "Distance(cm)", "Trial", "ID", "Time(ms)", "Correct"]
+                var headers = ["Name", "Device", "Width(cm)", "Distance(cm)", "Trial", "Time(ms)", "Correct"]
                 var data = []
 
                 for (var i = 0; i < sorted_trial_names.length; i++) {
@@ -619,7 +621,7 @@
                     if (result_rows != undefined && result_rows.length != 0) {
                         for (var j = 0; j < result_rows.length; j++) {
                             row = result_rows[j];
-                            data.push(name, device, row.width, row.amplitude, i, row.repetition, row.time, row.hit);
+                            data.push(name, device, row.width, row.amplitude, row.repetition, row.time, row.hit);
                         }
                     }
                 }
