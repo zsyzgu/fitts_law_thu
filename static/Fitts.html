@@ -491,7 +491,7 @@
                 }
                 
                 //record start time
-                cur_start_time = $.now();
+                //cur_start_time = $.now();
                 cur_error_count = 0;
                 
             }
@@ -583,6 +583,7 @@
             function recordResults(was_hit) {
                 var end_time = $.now();
                 var diff = end_time - cur_start_time;
+                cur_start_time = end_time;
                 
                 var result = new Object;
                 result.name = cur_trial.name;
@@ -590,7 +591,11 @@
                 result.width = cur_trial.width;
                 result.repetition = cur_repetition;
                 result.hit = was_hit;
-                result.time = diff;
+                if (cur_repetition == 0) {
+                    result.time = 0;
+                } else {
+                    result.time = diff;
+                }
                 
                 //If the results dict does not yet have a list, make one
                 if (!results.hasOwnProperty(cur_trial.name)) {
