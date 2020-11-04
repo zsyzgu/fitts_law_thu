@@ -703,19 +703,25 @@
                     }
                     return str;
                 }
-                
+                var embedIntoDiv = function(str) {
+                    return `<div>${str}</div>`;
+                }
+                let div_list = [];
                 var header_csv = escapeStr(headers[0]);
                 for (var i=1; i<headers.length; i++) {
                     header_csv = header_csv + ',' + escapeStr(headers[i]);
                 }
+                div_list.push(embedIntoDiv(header_csv));
                 for (var i = 0; i < data.length; i += headers.length) {
                     var data_csv = escapeStr(data[i])
                     for (var j = i + 1; j < i + headers.length; j++) {
                         data_csv = data_csv + ',' + escapeStr(data[j])
                     }
-                    header_csv = header_csv + '\r\n' + data_csv
+                    // header_csv = header_csv + '\r\n' + data_csv
+                    div_list.push(embedIntoDiv(data_csv));
                 }
-                return header_csv;
+                // return header_csv;
+                return div_list;
             }
             
             function updateScreenResolution() {
